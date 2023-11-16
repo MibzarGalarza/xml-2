@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obtener, Eliminar y Actualizar Registros</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Obtener Registros</h1>
+    <button id="obtenerDatos">Obtener Datos</button>
+    
+
+    <h1>Datos Obtenidos</h1>
+    <table id="tablaDatos">
+        <thead>
+            <tr>
+                <th>cve_municipio</th>
+                <th>desc_municipio</th>
+                <th>id_indicador</th>
+                <th>indicador</th>
+                <th>año</th>
+                <th>valor</th>
+                <th>unidad_medida</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+
+    <button class="custom-button" onclick="obtenerPromedio()">Obtener Promedio de Año</button>
+    <p id="promedio"></p>
+
+
+    <h1>Valores Repetidos</h1>
+    <button id="obtenerValoresRepetidos" class="boton">Obtener Valores Repetidos</button>
+    <table id="tablaRepetidos">
+        <thead>
+            <tr>
+                <th>Columna</th>
+                <th>Valor Repetido</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+
+    <h1>Calculadora de Media</h1>
+    <button id="obtenerMedia" class="boton">Obtener Media de id_indicador</button>
+    
+    <table id="tablaMedia">
+        <thead>
+            <tr>
+                <th>Columna</th>
+                <th>Media</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    
+
+    <h1>Eliminar Registro</h1>
+    <!-- Formulario para eliminar un registro por ID -->
+    <form id="eliminarDatosForm">
+        <label for="eliminarId">ID del registro a eliminar:</label>
+        <input type="number" id="eliminarId" name="eliminarId" required>
+        <button type="submit">Eliminar Registro</button>
+    </form>
+
+    <!-- Agrega un elemento para mostrar el resultado de la eliminación -->
+    <div id="resultadoEliminacion"></div>
+
+    <!-- Tabla para mostrar los datos obtenidos -->
+ 
+
+    <h1>Actualizar Registro</h1>
+    <!-- Formulario para actualizar un registro por ID -->
+    <form id="actualizarDatosForm">
+        <label for="updateId">ID del registro a actualizar:</label>
+        <input type="number" id="updateId" name="updateId" required>
+        <label for="newTitle">Nuevo Título:</label>
+        <input type="text" id="newTitle" name="newTitle" required>
+        <label for "newDescription">Nueva Descripción:</label>
+        <textarea id="newDescription" name="newDescription" rows="4" required></textarea>
+        <label for="newFecha">Nueva Fecha:</label>
+        <input type="date" id="newFecha" name="newFecha" required>
+        <label for="newType">Nuevo Tipo:</label>
+<input type="text" id="newType" name="newType" required>
+<button type="submit">Actualizar Registro</button>
+    </form>
+
+    <!-- Agrega un elemento para mostrar el resultado de la actualización -->
+    <div id="resultadoActualizacion"></div>
+
+
+    <h1>Agregar Registro</h1>
+<!-- Formulario para agregar un nuevo registro -->
+<form id="agregarDatosForm">
+    <label for="title">Título:</label>
+    <input type="text" id="title" name="title" required>
+    <label for="description">Descripción:</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha" required>
+    <label for="type">Tipo:</label>
+    <input type="text" id="type" name="type" required>
+    <button type="submit">Agregar Registro</button>
+</form>
+
+
+<h1>Actualizar Registro (PATCH)</h1>
+<form id="actualizarDatosFormPATCH">
+    <label for="updateIdPATCH">ID del registro a actualizar:</label>
+    <input type="number" id="updateIdPATCH" name="updateIdPATCH" required>
+    <label for="newTitlePATCH">Nuevo Título:</label>
+    <input type="text" id="newTitlePATCH" name="newTitlePATCH" >
+    <label for="newDescriptionPATCH">Nueva Descripción:</label>
+    <textarea id="newDescriptionPATCH" name="newDescriptionPATCH" rows="4" ></textarea>
+    <label for="newFechaPATCH">Nueva Fecha:</label>
+    <input type="date" id="newFechaPATCH" name="newFechaPATCH" >
+    <label for="newTypePATCH">Nuevo Tipo:</label>
+    <input type="text" id="newTypePATCH" name="newTypePATCH" >
+    <button type="submit">Actualizar Registro (PATCH)</button>
+</form>
+<div id="resultadoActualizacionPATCH"></div>
+
+
+
+
+
+    <script>
+
+
+        function obtenerPromedio() {
+            fetch('http://localhost/xml-2/xml.php?action=promedio_anio')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('promedio').innerText = 'El promedio del año es: ' + data.promedio_anio;
+                })
+                .catch(error => console.error('Error al obtener el promedio:', error));
+        }
+        
+
+        // Función para obtener datos
+        function obtenerDatos() {
+            fetch('http://localhost/xml-2/xml.php', {
+                method: 'GET', // Utiliza el método GET para obtener datos
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tablaBody = document.querySelector('#tablaDatos tbody');
+                tablaBody.innerHTML = '';
+
+                data.forEach(item => {
+                    const cve_municipio = item.cve_municipio;
+                    const desc_municipio = item.desc_municipio;
+                    const id_indicador = item.id_indicador;
+                    const indicador = item.indicador;
+                    const año = item.año;
+                    const valor = item.valor;
+                    const unidad_medida = item.unidad_medida;
+                    const fila = `<tr><td>${cve_municipio}</td><td>${desc_municipio}</td><td>${id_indicador}</td><td>${indicador}</td><td>${año}</td><td>${valor}</td><td>${unidad_medida}</td></tr>`;
+                    tablaBody.innerHTML += fila;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function obtenerValoresRepetidos() {
+            fetch('http://localhost/xml-2/xml.php?action=repetidos', {
+                method: 'GET', // Utiliza el método GET para obtener valores repetidos
+            })
+            .then(response => response.json())
+            .then(repetidos => {
+                const tablaRepetidos = document.querySelector('#tablaRepetidos tbody');
+                tablaRepetidos.innerHTML = '';
+
+                for (const columna in repetidos) {
+                    repetidos[columna].forEach(item => {
+                        const valor = item[columna];
+                        const cantidad = item.cantidad;
+                        const fila = `<tr><td>${columna}</td><td>${valor}</td><td>${cantidad}</td></tr>`;
+                        tablaRepetidos.innerHTML += fila;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function obtenerMediaColumna() {
+            fetch('http://localhost/xml-2/xml.php?action=media_columna&columna=id_indicador')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                } else {
+                    const media = data.media;
+                    mostrarResultadoEnTabla(media);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function mostrarResultadoEnTabla(media) {
+            const tabla = document.getElementById('tablaMedia').getElementsByTagName('tbody')[0];
+            tabla.innerHTML = '';
+
+            const fila = tabla.insertRow();
+            const columnaNombre = fila.insertCell(0);
+            const columnaMedia = fila.insertCell(1);
+
+            columnaNombre.innerHTML = 'id_indicador';
+            columnaMedia.innerHTML = media;
+        }
+
+        document.getElementById('obtenerMedia').addEventListener('click', obtenerMediaColumna);
+
+        document.getElementById('obtenerDatos').addEventListener('click', obtenerDatos);
+        document.getElementById('obtenerValoresRepetidos').addEventListener('click', obtenerValoresRepetidos);
+
+      
+
+        document.getElementById('eliminarDatosForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obtener el ID a eliminar
+            const id = document.getElementById('eliminarId').value;
+
+            // Realizar una solicitud HTTP al servidor para eliminar el registro
+            fetch('http://localhost/xml/xml.php', {
+                method: 'DELETE', // Utiliza el método DELETE
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'id=' + id,
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mostrar el resultado de la eliminación en el elemento de resultado
+                const resultadoEliminacion = document.getElementById('resultadoEliminacion');
+                resultadoEliminacion.innerHTML = data.message || data.error || 'Error desconocido';
+
+                // Actualizar la tabla de datos después de eliminar
+                obtenerDatos();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Función para actualizar un registro
+        document.getElementById('actualizarDatosForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obtener el ID a actualizar y los nuevos datos
+            const id = document.getElementById('updateId').value;
+            const newTitle = document.getElementById('newTitle').value;
+            const newDescription = document.getElementById('newDescription').value;
+            const newFecha = document.getElementById('newFecha').value;
+            const newType = document.getElementById('newType').value;
+
+            // Realizar una solicitud HTTP al servidor para actualizar el registro
+            fetch('http://localhost/xml/xml.php', {
+                method: 'PUT', // Utiliza el método PUT
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: id,
+                    newTitle: newTitle,
+                    newDescription: newDescription,
+                    newFecha: newFecha,
+                    newType: newType
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mostrar el resultado de la actualización en el elemento de resultado
+                const resultadoActualizacion = document.getElementById('resultadoActualizacion');
+                resultadoActualizacion.innerHTML = data.message || data.error || 'Error desconocido';
+
+                // Actualizar la tabla de datos después de la actualización
+                obtenerDatos();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+
+        document.getElementById('agregarDatosForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Obtener los datos del formulario
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const fecha = document.getElementById('fecha').value;
+        const type = document.getElementById('type').value;
+
+        // Realizar una solicitud HTTP al servidor para agregar el registro
+        fetch('http://localhost/xml/xml.php', {
+            method: 'POST', // Utiliza el método POST para agregar datos
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: title,
+                description: description,
+                fecha: fecha,
+                type: type,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Mostrar el resultado de la adición en la consola
+            console.log(data);
+
+            // Actualizar la tabla de datos después de agregar
+            obtenerDatos();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
+    document.getElementById('actualizarDatosFormPATCH').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Obtener el ID a actualizar y los nuevos datos
+    const id = document.getElementById('updateIdPATCH').value;
+
+    // Inicializar un objeto para almacenar los campos a actualizar
+    const updateData = {
+        id: id, // Siempre incluye el ID
+    };
+
+    // Obtener los valores de los campos y agregarlos al objeto updateData si tienen valor
+    const newTitle = document.getElementById('newTitlePATCH').value;
+    if (newTitle) {
+        updateData.newTitle = newTitle;
+    }
+
+    const newDescription = document.getElementById('newDescriptionPATCH').value;
+    if (newDescription) {
+        updateData.newDescription = newDescription;
+    }
+
+    const newFecha = document.getElementById('newFechaPATCH').value;
+    if (newFecha) {
+        updateData.newFecha = newFecha;
+    }
+
+    const newType = document.getElementById('newTypePATCH').value;
+    if (newType) {
+        updateData.newType = newType;
+    }
+
+    // Realizar una solicitud PATCH al servidor solo si hay campos para actualizar
+    if (Object.keys(updateData).length > 1) {
+        fetch('http://localhost/xml/xml.php', {
+            method: 'PATCH', // Utiliza el método PATCH
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Mostrar el resultado de la actualización en el elemento de resultado
+            const resultadoActualizacionPATCH = document.getElementById('resultadoActualizacionPATCH');
+            resultadoActualizacionPATCH.innerHTML = data.message || data.error || 'Error desconocido';
+
+            // Actualizar la tabla de datos después de la actualización
+            obtenerDatos();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+});
+   
+    </script>
+</body>
+</html>
